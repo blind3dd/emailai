@@ -1,0 +1,65 @@
+{
+    "go.toolsManagement.checkForUpdates": "off",
+    "go.useLanguageServer": true,
+    "go.toolsManagement.enable": false,
+    "go.toolsManagement.autoUpdate": false,
+    "go.alternateTools": {
+        "go": "${workspaceFolder}/bin/go",
+        "gofmt": "${workspaceFolder}/bin/gofmt",
+        "gopls": "${workspaceFolder}/bin/gopls"
+    },
+    "gopls": {
+        "experimentalWorkspaceModule": true,
+        "analyses": {
+            "unusedparams": true,
+            "shadow": true,
+            "fieldalignment": false,
+            "unusedresult": true,
+            "useany": true
+        },
+        "staticcheck": true,
+        "gofumpt": true,
+        "usePlaceholders": true,
+        "completionBudget": "100ms",
+        "semanticTokens": true,
+        "experimentalPostfixCompletions": true,
+        "experimentalWorkspaces": true,
+        "local": "",
+        "verboseOutput": false,
+        "completionUsePlaceholders": true,
+        "hints": {
+            "assignVariableTypes": true,
+            "compositeLiteralFields": true,
+            "compositeLiteralTypes": true,
+            "constantValues": true,
+            "functionTypeParameters": true,
+            "parameterNames": true,
+            "rangeVariableTypes": true
+        },
+        "env": {},
+        "buildFlags": [
+            "-tags=debug"
+        ]
+    },
+    "terraform.languageServer": {
+        "enabled": true,
+        "args": []
+    },
+    "ansible.ansible.path": "ansible",
+    "ansible.ansibleLint.path": "ansible-lint",
+    "typescript.preferences.preferTypeOnlyAutoImports": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "files.associations": {
+        "*.tf": "terraform",
+        "*.tfvars": "terraform",
+        "*.yaml": "ansible",
+        "*.yml": "ansible"
+    },
+    "git.confirmSync": false,
+    "git.enableCommitSigning": true,
+    "git.path": "${workspaceFolder}/bin/git",
+    "terminal.integrated.shellIntegration.enabled": true,
+}

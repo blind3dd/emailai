@@ -1,0 +1,104 @@
+#!/bin/bash
+# Commit message hook to ensure secure commit messages
+# This hook validates commit messages for security best practices
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Function to log messages
+log_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+log_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Read commit message
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+# Check for sensitive information in commit message
+check_sensitive_info() {
+    log_info "Checking commit message for sensitive information..."
+    
+    # Patterns to check for
+    sensitive_patterns=(
+        "password"
+        "secret"
+        "key"
+        "token"
+        "api_key"
+        "private_key"
+        "ssh_key"
+        "passphrase"
+        "credential"
+        "auth"
+        "login"
+        "passwd"
+    )
+    
+    for pattern in "${sensitive_patterns[@]}"; do
+        if echo "$commit_msg" | grep -i "$pattern" > /dev/null; then
+            log_error "Commit message contains potentially sensitive information: '$pattern'"
+            log_error "Please remove sensitive information from commit message."
+            return 1
+        fi
+    done
+    
+    log_info "Commit message security check passed"
+    return 0
+}
+
+# Check commit message format
+check_commit_format() {
+    log_info "Checking commit message format..."
+    
+    # Check minimum length
+    if [ ${#commit_msg} -lt 10 ]; then
+        log_error "Commit message too short (minimum 10 characters)"
+        return 1
+    fi
+    
+    # Check for proper capitalization
+    first_char=$(echo "$commit_msg" | cut -c1)
+    if [[ "$first_char" =~ [a-z] ]]; then
+        log_warn "Commit message should start with a capital letter"
+    fi
+    
+    # Check for trailing period
+    if [[ "$commit_msg" =~ \.$ ]]; then
+        log_warn "Commit message should not end with a period"
+    fi
+    
+    log_info "Commit message format check completed"
+    return 0
+}
+
+# Main validation
+main() {
+    log_info "Validating commit message..."
+    
+    if ! check_sensitive_info; then
+        exit 1
+    fi
+    
+    if ! check_commit_format; then
+        exit 1
+    fi
+    
+    log_info "Commit message validation successful"
+    exit 0
+}
+
+# Run main function
+main "$@"

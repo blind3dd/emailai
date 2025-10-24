@@ -1,0 +1,138 @@
+# Nix environment setup
+if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then
+    . ~/.nix-profile/etc/profile.d/nix.sh
+fi
+
+# Add Nix binaries to PATH
+export PATH="$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
+
+# Go environment
+export GOPATH="$HOME/Development/go"
+export PATH="$GOPATH/bin:$PATH"
+
+# Go cache configuration (separate from workspace)
+export GOMODCACHE="$HOME/.cache/go/mod"
+export GOCACHE="$HOME/.cache/go/build"
+export GOSUMDB="sum.golang.org"
+
+# Node.js (if using nvm)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# Python (if using pyenv)
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+fi
+
+# Rust (if using rustup)
+export PATH="$HOME/.cargo/bin:$PATH"
+
+# Direnv for environment management
+if command -v direnv 1>/dev/null 2>&1; then
+    eval "$(direnv hook zsh)"
+fi
+
+# GPG and SSH agent
+export GPG_TTY=$(tty)
+# Avoid leaking agent socket path into VCS
+# export SSH_AUTH_SOCK=<REDACTED>
+
+# Security and YubiKey
+export YUBIKEY_CHALLENGE_TIMEOUT=30
+
+# Aliases
+alias ll='ls -la'
+alias la='ls -A'
+alias l='ls -CF'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Git aliases (extended from gitconfig)
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git log --oneline'
+alias gd='git diff'
+alias gco='git checkout'
+alias gb='git branch'
+alias gpl='git pull'
+
+# Development aliases
+alias dev='cd /Users/REDACTED/Development/go/src/github.com/blind3dd/emailai && nix develop'
+alias work='cd /Users/REDACTED/Development'
+alias projects='cd /Users/REDACTED/Development/go/src/github.com/blind3dd'
+
+# Kubernetes aliases (if kubectl is available)
+if command -v kubectl 1>/dev/null 2>&1; then
+    alias k='kubectl'
+    alias kg='kubectl get'
+    alias kd='kubectl describe'
+    alias kdel='kubectl delete'
+    alias kaf='kubectl apply -f'
+    alias kex='kubectl exec -it'
+fi
+
+# Docker aliases (if docker is available)
+if command -v docker 1>/dev/null 2>&1; then
+    alias d='docker'
+    alias dc='docker-compose'
+    alias dps='docker ps'
+    alias di='docker images'
+    alias dl='docker logs'
+fi
+
+# Terraform aliases (if terraform is available)
+if command -v terraform 1>/dev/null 2>&1; then
+    alias tf='terraform'
+    alias tfi='terraform init'
+    alias tfp='terraform plan'
+    alias tfa='terraform apply'
+    alias tfd='terraform destroy'
+fi
+
+# Function to create a new project with git init and initial structure
+mkproject() {
+    mkdir -p "$1"
+    cd "$1" || return
+    git init
+    cp /Users/REDACTED/Development/go/src/github.com/blind3dd/emailai/dotfiles/git/gitignore .gitignore
+    echo "# $1" > README.md
+    git add .
+    git commit -m "Initial commit"
+}
+
+# Function to check YubiKey status
+yubikey-status() {
+    if command -v ykman 1>/dev/null 2>&1; then
+        echo "YubiKey Manager version: $(ykman --version)"
+        echo "YubiKey info:"
+        ykman info 2>/dev/null || echo "No YubiKey detected"
+    else
+        echo "YubiKey Manager not available"
+    fi
+}
+
+# Function to backup git hooks
+backup-git-hooks() {
+    cp -r .git-hooks ~/.git-hooks-backup-$(date +%Y%m%d-%H%M%S)
+    echo "Git hooks backed up to ~/.git-hooks-backup-$(date +%Y%m%d-%H%M%S)"
+}
+
+# Function to restore git hooks
+restore-git-hooks() {
+    if [ -d "$1" ]; then
+        rm -rf .git-hooks
+        cp -r "$1" .git-hooks
+        chmod +x .git-hooks/*
+        echo "Git hooks restored from $1"
+    else
+        echo "Usage: restore-git-hooks <backup-directory>"
+    fi
+}

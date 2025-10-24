@@ -1,0 +1,33 @@
+{
+    "recommendations": [
+        "golang.go",
+        "hashicorp.terraform",
+        "redhat.ansible",
+        "ms-vscode.vscode-typescript-next",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-json",
+        "streetsidesoftware.code-spell-checker",
+        "ms-vscode.powershell",
+        "ms-vscode.vscode-yaml",
+        "yzhang.markdown-all-in-one",
+        "ms-vscode.vscode-docker",
+        "ms-vscode-remote.remote-containers",
+        "ms-vscode.vscode-git-graph",
+        "eamodio.gitlens",
+        "ms-vscode.vscode-eslint",
+        "ms-vscode.vscode-css-peek",
+        "ms-vscode.vscode-npm",
+        "ms-vscode.vscode-markdown-notebook",
+        "ms-vscode.vscode-jupyter-powertoys",
+        "ms-vscode.vscode-jupyter-slideshow",
+        "ms-vscode.vscode-jupyter-keymap",
+        "ms-vscode.vscode-jupyter-cell-tags",
+        "ms-vscode.vscode-jupyter-variable-viewer",
+        "ms-vscode.vscode-github-issue-notebooks"
+    ],
+    "unwantedRecommendations": [
+        "ms-vscode.vscode-typescript",
+        "ms-vscode.vscode-typescript-auto-import",
+        "ms-vscode.vscode-typescript-importer"
+    ]
+}

@@ -1,0 +1,63 @@
+{
+    "go.toolsManagement.checkForUpdates": "off",
+    "go.useLanguageServer": true,
+    "go.gocodeAutoBuild": false,
+    "go.formatTool": "gofmt",
+    "go.lintTool": "golangci-lint",
+    "go.vetOnSave": "package",
+    "go.formatOnSave": true,
+    "go.lintOnSave": "package",
+    "go.buildOnSave": "package",
+    "go.testOnSave": false,
+    "go.coverOnSave": false,
+    "go.coverOnSingleTest": false,
+    "go.alternateTools": {
+        "go": "/nix/store/*-go-*/bin/go",
+        "gofmt": "/nix/store/*-go-*/bin/gofmt"
+    },
+    "terraform.languageServer": {
+        "enabled": true,
+        "args": []
+    },
+    "ansible.ansible.path": "/nix/store/*-ansible-*/bin/ansible",
+    "ansible.ansibleLint.path": "/nix/store/*-ansible-lint-*/bin/ansible-lint",
+    "typescript.preferences.preferTypeOnlyAutoImports": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "files.associations": {
+        "*.tf": "terraform",
+        "*.tfvars": "terraform",
+        "*.yaml": "ansible",
+        "*.yml": "ansible"
+    },
+    "git.confirmSync": false,
+    "git.enableCommitSigning": true,
+    "git.path": "/nix/store/*-git-*/bin/git",
+    "terminal.integrated.shellIntegration.enabled": true,
+    "terminal.integrated.env.osx": {
+        "PATH": "${env:PATH}:/nix/var/nix/profiles/default/bin"
+    },
+    "window.commandCenter": true,
+    "workbench.colorTheme": "Cursor Dark Midnight",
+    "cursor.composer.shouldAllowCustomModes": true,
+    "cursor.terminal.usePreviewBox": true,
+    "go.editorContextMenuCommands": {
+        "removeTags": true,
+        "generateTestForFile": true,
+        "testPackage": true,
+        "testFile": true,
+        "fillStruct": true,
+        "benchmarkAtCursor": true,
+        "generateTestForPackage": true
+    },
+    "go.inlayHints.assignVariableTypes": true,
+    "go.inlayHints.compositeLiteralFields": true,
+    "go.inlayHints.compositeLiteralTypes": true,
+    "go.inlayHints.constantValues": true,
+    "go.inlayHints.functionTypeParameters": true,
+    "go.inlayHints.ignoredError": true,
+    "go.inlayHints.parameterNames": true,
+    "go.inlayHints.rangeVariableTypes": true
+}

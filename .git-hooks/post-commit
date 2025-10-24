@@ -1,0 +1,40 @@
+#!/bin/bash
+# Post-commit hook for security logging and cleanup
+# This hook runs after a successful commit to log security events
+
+set -e
+
+# Colors for output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to log messages
+log_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+log_security() {
+    echo -e "${BLUE}[SECURITY]${NC} $1"
+}
+
+# Get commit information
+commit_hash=$(git rev-parse HEAD)
+commit_author=$(git log -1 --pretty=format:"%an <%ae>")
+commit_date=$(git log -1 --pretty=format:"%ad")
+commit_message=$(git log -1 --pretty=format:"%s")
+branch=$(git branch --show-current 2>/dev/null || echo "detached HEAD")
+
+# Log security event
+log_security "Commit completed successfully"
+log_info "Commit Hash: $commit_hash"
+log_info "Author: $commit_author"
+log_info "Date: $commit_date"
+log_info "Branch: $branch"
+log_info "Message: $commit_message"
+
+# Optional: Log to security log file
+security_log="$HOME/.git-security.log"
+echo "$(date): COMMIT - $commit_hash - $commit_author - $branch - $commit_message" >> "$security_log"
+
+log_info "Security event logged to $security_log"

@@ -1,0 +1,48 @@
+[user]
+    name = <REDACTED>
+    email = <REDACTED>
+    signingkey = <REDACTED>
+
+[commit]
+    gpgsign = true
+
+[tag]
+    gpgsign = true
+
+[core]
+    editor = nano
+    hookspath = .git-hooks
+    autocrlf = input
+
+[gpg]
+    program = gpg
+
+[alias]
+    lg = log --oneline --graph --decorate
+    st = status
+    ci = commit
+    co = checkout
+    br = branch
+    df = diff
+    dc = diff --cached
+    amend = commit --amend
+    unstage = reset HEAD --
+
+[init]
+    defaultBranch = main
+
+[credential]
+    helper = store
+
+[merge]
+    tool = vimdiff
+
+[mergetool "vimdiff"]
+    cmd = vimdiff "$LOCAL" "$REMOTE"
+    trustExitCode = true
+
+[diff]
+    tool = vimdiff
+
+[difftool "vimdiff"]
+    cmd = vimdiff "$LOCAL" "$REMOTE"
