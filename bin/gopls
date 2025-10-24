@@ -1,3 +1,0 @@
-#!/bin/bash
-# Wrapper script for gopls that works with Nix environment
-exec nix develop --accept-flake-config --command gopls "$@"
