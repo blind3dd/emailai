@@ -1,3 +1,0 @@
-#!/bin/bash
-# Wrapper script for git that works with Nix environment
-exec nix develop --accept-flake-config --command git "$@"

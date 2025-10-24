@@ -1,0 +1,52 @@
+# syntax=docker/dockerfile:1
+
+# --- Builder ---
+FROM golang:1.25-bookworm AS builder
+WORKDIR /src
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates tzdata build-essential git && rm -rf /var/lib/apt/lists/*
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+ENV CGO_ENABLED=1
+ARG VERSION
+ARG VCS_REF
+ARG BUILD_DATE
+# Smaller binary
+RUN go build -ldflags='-s -w' -o /out/emailai ./cmd/emailai
+
+# --- Runtime ---
+FROM debian:bookworm-slim
+ARG VERSION
+ARG VCS_REF
+ARG BUILD_DATE
+ARG USER=app
+ARG UID=10001
+ARG GID=10001
+
+# Labels (OCI)
+LABEL org.opencontainers.image.created=$BUILD_DATE \
+    org.opencontainers.image.revision=$VCS_REF \
+    org.opencontainers.image.version=$VERSION \
+    org.opencontainers.image.title="emailai" \
+    org.opencontainers.image.source="https://github.com/blind3dd/emailai"
+
+# Runtime deps
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates tzdata openssl passwd && \
+    update-ca-certificates && rm -rf /var/lib/apt/lists/*
+
+# Non-root user
+RUN groupadd -g ${GID} ${USER} && useradd -r -u ${UID} -g ${GID} ${USER}
+
+# App
+COPY --from=builder /out/emailai /usr/local/bin/emailai
+RUN chmod 0755 /usr/local/bin/emailai
+
+USER ${USER}:${USER}
+WORKDIR /home/${USER}
+ENV TZ=UTC \
+    EMAILAI_WORKERS=5 \
+    EMAILAI_TASKS=100 \
+    EMAILAI_LOG_LEVEL=info
+
+# Preflight checks then exec
+ENTRYPOINT ["/bin/sh","-lc","id && getent passwd $(whoami) >/dev/null && getent group $(id -gn) >/dev/null && exec /usr/local/bin/emailai"]

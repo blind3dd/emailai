@@ -9,9 +9,11 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"net/http"
 	"sync"
 	"syscall"
 	"time"
+	"strings"
 )
 
 type WorkerPool interface {
@@ -28,7 +30,6 @@ type workerPool struct {
 	workers       []*worker
 	taskQueue     chan func(int)
 	numTasks      int
-	workersNumber int
 	workersMax    int
 	ctx           context.Context
 	cancel        context.CancelFunc
@@ -49,6 +50,24 @@ type Job struct {
 
 type EmailProcessor struct {
 	WorkerID int
+}
+
+// start optional pprof endpoint when EMAILAI_PPROF is set to 1/true
+func maybeStartPprof() {
+    enabled := strings.ToLower(os.Getenv("EMAILAI_PPROF"))
+    if enabled != "1" && enabled != "true" {
+        return
+    }
+    addr := os.Getenv("EMAILAI_PPROF_ADDR") // defaults to :6060 if not set
+    if addr == "" {
+        addr = ":6060"
+    }
+    go func() {
+        log.Printf("pprof listening on %s", addr)
+        if err := http.ListenAndServe(addr, nil); err != nil {
+            log.Printf("pprof server error: %v", err)
+        }
+    }()
 }
 
 func checkContextSet(ctx context.Context) (err error) {
@@ -72,7 +91,9 @@ func doContextCheck(ctx context.Context) error {
 func NewWorkerPool(workersMaxNumb int, numTasks int, cause error) *workerPool {
 	ctx, cancel := context.WithCancel(context.Background())
 	time.Sleep(500 * time.Millisecond)
-	defer checkContextSet(ctx)
+    if err := checkContextSet(ctx); err != nil {
+        log.Printf("context check warning: %v", err)
+    }
 
 	return &workerPool{
 		numTasks:   numTasks,
@@ -187,6 +208,8 @@ func (w *workerPool) dispatchTasks() {
 }
 
 func main() {
+    // optional: enable pprof when EMAILAI_PPROF and EMAIL_PPROF_ADDR are set
+    maybeStartPprof()
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
@@ -196,7 +219,13 @@ func main() {
 		fmt.Printf("Received signal: %v", sig)
 	}()
 
-	pool := NewWorkerPool(5, 100,
+    // Prepare email list to process
+    emails := make([]string, 0, 100)
+    for i := 0; i < 100; i++ {
+        emails = append(emails, fmt.Sprintf("email%d@example.com", i))
+    }
+
+    pool := NewWorkerPool(5, len(emails),
 		fmt.Errorf("%s", "failed to propagate context during object instantiation"),
 	)
 	ctx := context.Background()
@@ -207,10 +236,8 @@ func main() {
 		log.Printf("failed to dispatch workers from worker pool, error: %v\n", err)
 	}
 
-	numTasks := pool.numTasks
-	for i := 0; i < numTasks; i++ {
-		jobID := i
-		email := fmt.Sprintf("email%d@example.com", i)
+    numTasks := len(emails)
+    for jobID, email := range emails {
 
 		task := func(workerID int) {
 			processor := &EmailProcessor{WorkerID: workerID}
@@ -231,7 +258,7 @@ func main() {
 	completed := 0
 	for completed < numTasks {
 		select {
-		case r := <-results:
+        case r := <-results:
 			log.Printf("result: %s", r)
 			completed++
 		case <-ctx.Done():
