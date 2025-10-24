@@ -30,7 +30,6 @@ type workerPool struct {
 	workers       []*worker
 	taskQueue     chan func(int)
 	numTasks      int
-	workersNumber int
 	workersMax    int
 	ctx           context.Context
 	cancel        context.CancelFunc
@@ -92,7 +91,9 @@ func doContextCheck(ctx context.Context) error {
 func NewWorkerPool(workersMaxNumb int, numTasks int, cause error) *workerPool {
 	ctx, cancel := context.WithCancel(context.Background())
 	time.Sleep(500 * time.Millisecond)
-	defer checkContextSet(ctx)
+    if err := checkContextSet(ctx); err != nil {
+        log.Printf("context check warning: %v", err)
+    }
 
 	return &workerPool{
 		numTasks:   numTasks,

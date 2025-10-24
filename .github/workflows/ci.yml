@@ -19,6 +19,7 @@ jobs:
           ~/.cache/go/mod
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
+
     - uses: cachix/install-nix-action@v30
       with:
         nix_path: nixpkgs=channel:nixos-stable
