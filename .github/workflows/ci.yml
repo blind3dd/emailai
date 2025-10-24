@@ -26,8 +26,8 @@ jobs:
     - name: Build (CGO enabled)
       run: nix develop --accept-flake-config --command bash -lc 'CGO_ENABLED=1 go build ./...'
 
-    - name: Test (ginkgo parallel + race)
-      run: nix develop --accept-flake-config --command bash -lc 'go install github.com/onsi/ginkgo/v2/ginkgo@latest && ginkgo -p -race -r ./...'
+    - name: Test (ginkgo via go run)
+      run: nix develop --accept-flake-config --command bash -lc 'go run github.com/onsi/ginkgo/v2/ginkgo -p -race -r ./...'
 
     - name: Lint
       run: nix develop --accept-flake-config --command bash -lc 'golangci-lint run --timeout=5m'
