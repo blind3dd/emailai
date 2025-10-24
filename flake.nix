@@ -126,8 +126,8 @@
             # Setup git configuration if not already set (redacted defaults)
             if ! git config user.name >/dev/null 2>&1; then
               echo "Setting up git configuration..."
-              git config user.name "<REDACTED>"
-              git config user.email "<REDACTED>"
+              git config user.name "Paweł Bek"
+              git config user.email "blind3dd@gmail.com"
               git config user.signingkey "<REDACTED>"
               git config commit.gpgsign true
               git config tag.gpgsign true
@@ -183,10 +183,10 @@
             GO111MODULE = "on";
             CGO_ENABLED = "0";
             # Git configuration
-            GIT_AUTHOR_NAME = "<REDACTED>";
-            GIT_AUTHOR_EMAIL = "<REDACTED>";
-            GIT_COMMITTER_NAME = "<REDACTED>";
-            GIT_COMMITTER_EMAIL = "<REDACTED>";
+            GIT_AUTHOR_NAME = "Paweł Bek";
+            GIT_AUTHOR_EMAIL = "blind3dd@gmail.com";
+            GIT_COMMITTER_NAME = "Paweł Bek";
+            GIT_COMMITTER_EMAIL = "blind3dd@gmail.com";
           };
         };
       });

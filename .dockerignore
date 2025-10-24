@@ -1,0 +1,25 @@
+# VCS
+.git
+.git-hooks
+
+# Nix & direnv
+.direnv
+result*
+
+# Editor/OS
+.vscode
+.idea
+.DS_Store
+
+# Go build
+bin/
+**/*.test
+**/*.out
+**/*.exe
+
+# Node
+node_modules
+
+# Misc
+*.log
+coverage/

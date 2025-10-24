@@ -1,5 +1,9 @@
 ## EmailAI Project - Goroutine Pool Pattern based initial project NOT VIBE CODED
 
+![Build](https://img.shields.io/github/actions/workflow/status/blind3dd/emailai/ci.yml?branch=main)
+![License](https://img.shields.io/badge/license-Apache--2.0-blue)
+![Go](https://img.shields.io/badge/Go-1.25+-informational)
+
 Program is going to be meant to be a long going project (as free time will only allow) for 
 understanding communication patterns, priorities, and relationships through email interactions data,
 filtering signal from noise in email overload inspired by my own mailbox where I am subscribed for years
