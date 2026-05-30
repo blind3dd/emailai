@@ -74,6 +74,7 @@ logs/
 # Build outputs
 dist/
 build/
+output/
 target/
 *.min.js
 *.min.css

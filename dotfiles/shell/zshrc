@@ -65,9 +65,9 @@ alias gb='git branch'
 alias gpl='git pull'
 
 # Development aliases
-alias dev='cd /Users/REDACTED/Development/go/src/github.com/blind3dd/emailai && nix develop'
+alias dev='cd /Users/REDACTED/Development/go/src/github.com/REDACTED/emailai && nix develop'
 alias work='cd /Users/REDACTED/Development'
-alias projects='cd /Users/REDACTED/Development/go/src/github.com/blind3dd'
+alias projects='cd /Users/REDACTED/Development/go/src/github.com/REDACTED'
 
 # Kubernetes aliases (if kubectl is available)
 if command -v kubectl 1>/dev/null 2>&1; then

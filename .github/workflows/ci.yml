@@ -19,13 +19,18 @@ jobs:
           ~/.cache/go/mod
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
+    - name: Nix config for private cache
+      run: |
+        export NIX_CONFIG="substituters = https://cache.nixos.org https://blind3dd.cachix.org
+        trusted-public-keys = cache.nixos.org-1:... your-cache-1:... "
+        nix develop --accept-flake-config --command bash -lc 'go build ./...'
 
     - uses: cachix/install-nix-action@v30
       with:
         nix_path: nixpkgs=channel:nixos-stable
 
-    - name: Build (CGO enabled)
-      run: nix develop --accept-flake-config --command bash -lc 'CGO_ENABLED=1 go build ./...'
+    - name: Generate protobuf and build
+      run: nix develop --accept-flake-config --command bash -lc 'make proto && CGO_ENABLED=1 go build ./...'
 
     - name: Test (ginkgo via go run)
       run: nix develop --accept-flake-config --command bash -lc 'CGO_ENABLED=1 go run github.com/onsi/ginkgo/v2/ginkgo -p -race -r ./...'

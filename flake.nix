@@ -89,15 +89,21 @@
           direnv
         ];
 
+        # Protocol Buffers (protoc + Go plugin; no Homebrew/SDKs)
+        protoTools = with pkgs; [
+          protobuf
+          protoc-gen-go
+        ];
+
       in
       {
         devShells.default = pkgs.mkShell {
           name = "emailai-dev";
 
-          buildInputs = goTools ++ terraformTools ++ ansibleTools ++ nodeTools ++ securityTools ++ devTools;
+          buildInputs = goTools ++ terraformTools ++ ansibleTools ++ nodeTools ++ securityTools ++ devTools ++ protoTools;
 
           shellHook = ''
-            echo "🚀 Entering EmailAI development environment"
+            echo "Entering EmailAI development environment"
             echo "Go version: $(go version)"
             echo "OpenTofu version: $(terraform --version 2>/dev/null | head -1 || echo 'not available')"
             echo "Node.js version: $(node --version)"
@@ -123,31 +129,33 @@
               echo "Dotfiles installed. Backups created with .bak extension."
             fi
 
-            # Setup git configuration if not already set (redacted defaults)
+            # Setup git configuration if not already set
             if ! git config user.name >/dev/null 2>&1; then
               echo "Setting up git configuration..."
               git config user.name "Paweł Bek"
               git config user.email "blind3dd@gmail.com"
-              git config user.signingkey "<REDACTED>"
               git config commit.gpgsign true
               git config tag.gpgsign true
               git config core.editor "$(which nano)"
               git config core.hookspath "$PWD/.git-hooks"
               git config core.autocrlf input
-              git config gpg.program "$(which gpg)"
               echo "Git configuration applied for this project"
+            fi
+
+            if [[ -f ./dotfiles/gpg/yubikey-shell-hook.sh ]]; then
+              source ./dotfiles/gpg/yubikey-shell-hook.sh
             fi
 
             # Setup Kerberos if needed
             if [ -f /etc/krb5.conf ]; then
-              echo "✅ Kerberos configuration found at /etc/krb5.conf"
+              echo "Kerberos configuration found at /etc/krb5.conf"
               echo "Realm: $(grep 'default_realm' /etc/krb5.conf | cut -d'=' -f2 | tr -d ' ')"
             elif [ -f dotfiles/security/krb5.conf ]; then
               echo "Setting up Kerberos configuration for EXAMPLE.COM..."
               sudo mkdir -p /etc && sudo cp dotfiles/security/krb5.conf /etc/krb5.conf
               echo "Kerberos configuration installed to /etc/krb5.conf"
             else
-              echo "ℹ️  No Kerberos configuration found. Set up manually if needed."
+              echo "No Kerberos configuration found. Set up manually if needed."
             fi
 
             # Ensure tools are available in PATH
@@ -166,11 +174,13 @@
             if command -v tofu >/dev/null 2>&1; then
                 export PATH="$(dirname $(which tofu)):$PATH"
                 alias terraform='tofu'
-                echo "✅ OpenTofu available (terraform commands work)"
+                echo "OpenTofu available (terraform commands work)"
             fi
 
             # Ensure gopls can find Go source
-            echo "✅ Go environment configured for development"
+            echo "Go environment configured for development"
+            echo "Protobuf: $(protoc --version 2>/dev/null || echo 'not available')"
+            echo "  generate Go types: make proto  (or: nix develop --command make proto)"
           '';
 
           # Environment variables
